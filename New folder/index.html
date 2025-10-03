@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OTP Verification</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 5px; padding: 8px; width: 200px; }
+    #status { margin-top: 10px; color: green; }
+  </style>
+</head>
+<body>
+  <h2>Messenger OTP Verification</h2>
+  <input type="text" id="phone" placeholder="Enter phone number" />
+  <input type="text" id="otp" placeholder="Enter OTP" />
+  <br />
+  <button onclick="sendOTP()">Send OTP</button>
+  <button onclick="verifyOTP()">Verify OTP</button>
+  <div id="status"></div>
+
+  <script>
+    function sendOTP() {
+      const phone = document.getElementById("phone").value;
+      const otp = document.getElementById("otp").value;
+
+      fetch("/.netlify/functions/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, otp })
+      })
+      .then(res => res.text())
+      .then(text => {
+        try {
+          const data = JSON.parse(text);
+          document.getElementById("status").innerText = data.success
+            ? "OTP sent successfully!"
+            : "Failed to send OTP: " + data.message;
+        } catch (e) {
+          document.getElementById("status").innerText = "Invalid response from server.";
+        }
+      })
+      .catch(err => {
+        document.getElementById("status").innerText = "Error: " + err.message;
+      });
+    }
+
+    function verifyOTP() {
+      const otp = document.getElementById("otp").value;
+      document.getElementById("status").innerText = "OTP verified (mock).";
+    }
+  </script>
+</body>
+</html>
